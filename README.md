@@ -4,17 +4,6 @@
 
 ## 使用说明
 
-+ maven
-
-```
-<dependency>
-    <groupId>com.acupt</groupId>
-    <artifactId>acupsession</artifactId>
-    <version>1.0-SNAPSHOT</version>
-</dependency>
-```
-
-
 + web.xml
 
 ```
