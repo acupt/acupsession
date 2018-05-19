@@ -10,7 +10,7 @@
 <repositories>
     <repository>
     <id>acupt-repository</id>
-    <url>https://raw.githubusercontent.com/acupt/repository/snapshot</url>
+    <url>https://raw.github.com/acupt/repository/snapshot</url>
     </repository>
 </repositories>
 
