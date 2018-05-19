@@ -1,0 +1,1 @@
+mvn deploy -DaltDeploymentRepository=acupt-repository::default::file:/Users/yunpian/github/repository/

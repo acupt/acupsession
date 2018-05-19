@@ -7,15 +7,20 @@
     <groupId>com.acupt</groupId>
     <artifactId>acupsession</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <name>acupsession</name>
+    <url>https://github.com/acupt/acupsession</url>
+    <description>a cup session of redis</description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>3.0.1</version>
         </dependency>
-
         <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
