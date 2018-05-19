@@ -52,7 +52,7 @@ public class SerialUtil {
         return bytes;
     }
 
-    private static void close(Closeable closeable) {
+    public static void close(Closeable closeable) {
         if (closeable == null) {
             return;
         }

@@ -10,7 +10,6 @@ import javax.servlet.http.HttpSession;
  */
 public class HttpServletRequestWrapper extends javax.servlet.http.HttpServletRequestWrapper {
 
-    private static final String COOKIE_SESSION_ID = "acupsession_id";
     private HttpServletRequest request;
     private HttpServletResponse response;
     private SessionWrapper session;
@@ -26,10 +25,15 @@ public class HttpServletRequestWrapper extends javax.servlet.http.HttpServletReq
 
     private void initSession() {
         String id = getSessionIdFromCookie();
-        if (id == null || id.equals("")) {
-            id = createSession();
+        if (id != null && !id.equals("")) {
+            SessionContext context = sessionStore.find(id);
+            if (context != null) {
+                context.setLastAccessedTime(System.currentTimeMillis());
+                session = new SessionWrapper(context, sessionStore, request.getServletContext());
+                return;
+            }
         }
-        session = new SessionWrapper(id, sessionStore, request.getServletContext());
+        session = createSession();
     }
 
     @Override
@@ -40,8 +44,7 @@ public class HttpServletRequestWrapper extends javax.servlet.http.HttpServletReq
     @Override
     public HttpSession getSession(boolean create) {
         if (session == null && create) {
-            String id = createSession();
-            session = new SessionWrapper(id, sessionStore, request.getServletContext());
+            session = createSession();
         }
         if (session != null) {
             session.touch();
@@ -49,15 +52,15 @@ public class HttpServletRequestWrapper extends javax.servlet.http.HttpServletReq
         return session;
     }
 
-    private String createSession() {
-        String id = sessionStore.create();
-        response.addCookie(new Cookie(COOKIE_SESSION_ID, id));
-        return id;
+    private SessionWrapper createSession() {
+        SessionContext context = sessionStore.create();
+        response.addCookie(new Cookie(SessionConfig.getCookieSessionid(), context.getId()));
+        return new SessionWrapper(context, sessionStore, request.getServletContext());
     }
 
     private String getSessionIdFromCookie() {
         for (Cookie cookie : request.getCookies()) {
-            if (COOKIE_SESSION_ID.equals(cookie.getName())) {
+            if (SessionConfig.getCookieSessionid().equals(cookie.getName())) {
                 return cookie.getValue();
             }
         }

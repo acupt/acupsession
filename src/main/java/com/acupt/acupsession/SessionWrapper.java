@@ -3,7 +3,9 @@ package com.acupt.acupsession;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 /**
  * Created by liujie on 2018/5/17.
@@ -11,25 +13,23 @@ import java.util.Enumeration;
 public class SessionWrapper implements HttpSession {
 
     private String id;
+    private SessionContext sessionContext;
     private transient SessionStore sessionStore;
     private transient ServletContext servletContext;
 
-//    private long creationTime = System.currentTimeMillis();
-//    private long lastAccessedTime;
-//    private int maxInactiveInterval;
-
-    public SessionWrapper(String id, SessionStore sessionStore, ServletContext servletContext) {
-        this.id = id;
+    public SessionWrapper(SessionContext sessionContext, SessionStore sessionStore, ServletContext servletContext) {
+        this.id = sessionContext.getId();
+        this.sessionContext = sessionContext;
         this.sessionStore = sessionStore;
         this.servletContext = servletContext;
     }
 
     public void touch() {
-
+        sessionStore.touch(id);
     }
 
     public long getCreationTime() {
-        return 0;
+        return sessionContext.getCreationTime();
     }
 
     public String getId() {
@@ -37,7 +37,7 @@ public class SessionWrapper implements HttpSession {
     }
 
     public long getLastAccessedTime() {
-        return 0;
+        return sessionContext.getLastAccessedTime();
     }
 
     public ServletContext getServletContext() {
@@ -45,11 +45,11 @@ public class SessionWrapper implements HttpSession {
     }
 
     public void setMaxInactiveInterval(int interval) {
-
+        sessionContext.setMaxInactiveInterval(interval);
     }
 
     public int getMaxInactiveInterval() {
-        return 0;
+        return sessionContext.getMaxInactiveInterval();
     }
 
     public HttpSessionContext getSessionContext() {
@@ -65,15 +65,21 @@ public class SessionWrapper implements HttpSession {
     }
 
     public Enumeration<String> getAttributeNames() {
-        return null;
+        return sessionStore.getAttributeNames(id);
     }
 
     public String[] getValueNames() {
-        return new String[0];
+        Enumeration<String> enumeration = getAttributeNames();
+        List<String> list = new ArrayList<String>();
+        while (enumeration.hasMoreElements()) {
+            list.add(enumeration.nextElement());
+        }
+        String[] array = new String[list.size()];
+        return list.toArray(array);
     }
 
     public void setAttribute(String name, Object value) {
-        sessionStore.setAttribute(id,name,value);
+        sessionStore.setAttribute(id, name, value);
     }
 
     public void putValue(String name, Object value) {
@@ -81,7 +87,7 @@ public class SessionWrapper implements HttpSession {
     }
 
     public void removeAttribute(String name) {
-
+        sessionStore.removeAttribute(id, name);
     }
 
     public void removeValue(String name) {
@@ -89,7 +95,7 @@ public class SessionWrapper implements HttpSession {
     }
 
     public void invalidate() {
-
+        sessionStore.invalidate(id);
     }
 
     public boolean isNew() {
